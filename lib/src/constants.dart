@@ -5,4 +5,5 @@ const COMMENT_END = " */";
 
 const BLOCK_MARKER = "cc:settings";
 
-const START_BLOCK
+const BLOCK_START = "{";
+const BLOCK_END = "}";
