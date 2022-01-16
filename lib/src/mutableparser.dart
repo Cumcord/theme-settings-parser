@@ -23,6 +23,7 @@ css code, with associated mode annotated with <>
 
 import 'package:cc_theme_settings_parser/src/constants.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
+import 'package:cc_theme_settings_parser/src/parsererror.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
 import 'package:cc_theme_settings_parser/src/util.dart';
 
@@ -84,7 +85,22 @@ class MutableParser {
         break;
 
       case Mode.block:
-        // TODO: WOOOOOO OH BOY FUN
+        if (currentChar == PROP_END) {
+          state.mode = Mode.afterprop;
+          state.lastProp = state.workingStack;
+          _resetStack();
+        } else if (currentChar == BLOCK_END) {
+          // screw you that person in cumcord who leaves off the last semicolon
+          throw ParserError("last prop in block did not have a semicolon");
+        } else if (state.workingStack.endsWith(COMMENT_START)) {
+          popLastWorkingStack(state, 3);
+          state.mode = Mode.blockcomment;
+          state.blockCommentReturnStack = state.workingStack;
+          _resetStack();
+        }
+        break;
+
+      case Mode.afterprop:
         break;
 
       case Mode.unimportantblock:
@@ -107,11 +123,12 @@ class MutableParser {
 
       case Mode.blockcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
-          if (state.lastMode == Mode.block) {
+          if (state.lastMode == Mode.afterprop) {
             // TODO: handle creating settings! Exciting!!!!
           } else {
             state.mode = state.lastMode;
-            _resetStack();
+            state.workingStack = state.blockCommentReturnStack;
+            state.blockCommentReturnStack = "";
           }
         }
         break;

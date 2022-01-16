@@ -32,6 +32,9 @@ class ParserState {
   /// Used by modes like Mode.string and Mode.blockcomment to return back
   Mode lastMode = Mode.toplevel;
 
+  /// After a comment, it may be necessary to keep the old value of workingStack
+  String blockCommentReturnStack = "";
+
   /// parsed blocks go here, read your output out of this prop!!!
   Map<String, Block> blocks = {};
 }

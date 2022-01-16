@@ -7,3 +7,5 @@ const BLOCK_MARKER = "cc:settings";
 
 const BLOCK_START = "{";
 const BLOCK_END = "}";
+
+const PROP_END = ";";
