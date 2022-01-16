@@ -15,6 +15,5 @@ const css = """
 
 void main() {
   final parser = Parser(css);
-  while (parser.advance()) {}
-  final parseResult = parser.blocks;
+  final parseResult = parser.parseToEnd();
 }
