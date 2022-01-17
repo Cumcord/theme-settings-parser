@@ -21,7 +21,7 @@ class ParserState {
   bool stringIsDouble = false;
 
   /// stores the last stack of Mode.string
-  String lastString = "";
+  //String lastString = "";
 
   /// spicy stuff now! last selector read by Mode.aftertopcomment
   String lastSelector = "";
@@ -36,5 +36,5 @@ class ParserState {
   String blockCommentReturnStack = "";
 
   /// parsed blocks go here, read your output out of this prop!!!
-  Map<String, Block> blocks = {};
+  List<Block> blocks = [];
 }

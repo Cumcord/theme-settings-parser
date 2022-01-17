@@ -51,58 +51,79 @@ class MutableParser {
     final thisModeTmp = state.mode;
 
     switch (state.mode) {
+      // we're before a /* cc: comment (at the very start or after a })
       case Mode.toplevel:
         if (state.workingStack.endsWith(COMMENT_START)) {
           state.mode = Mode.topcomment;
-          // when we enter a comment at top level,
-          // we shouldnt need to remember anything before.
           _resetStack();
-          return true;
+        } else if (currentChar == BLOCK_START) {
+          state.mode = Mode.unimportantblock;
+          _resetStack();
         }
-
         break;
 
+      // a top level comment, be it /* cc: or not
       case Mode.topcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
-          if (state.workingStack == BLOCK_MARKER) {
+          trimStack(state);
+
+          if (state.workingStack.startsWith(COMMENT_PREFIX) &&
+              state.workingStack.substring(COMMENT_PREFIX.length) ==
+                  COMMENT_SETTINGS) {
+            // cc:settings
             state.mode = Mode.selector;
             _resetStack();
           } else {
             state.mode = Mode.toplevel;
-            // this comment was worthless, so discard it
-            // the stack should only contain our comment in this mode.
+            // this comment was worthless, so discard it :husk:
             _resetStack();
           }
         }
         break;
 
+      // a selector, but only after an applicable cc:settings comment
       case Mode.selector:
-        if (currentChar == BLOCK_MARKER) {
+        if (currentChar == BLOCK_START) {
+          trimStack(state);
           state.mode = Mode.block;
+          // exciting, time to enter a block that needs proper parsing
           state.lastSelector = popLast(state.workingStack);
           _resetStack();
         }
         break;
 
+      // parsing a block that's important
       case Mode.block:
         if (currentChar == PROP_END) {
+          trimStack(state);
           state.mode = Mode.afterprop;
           state.lastProp = state.workingStack;
           _resetStack();
         } else if (currentChar == BLOCK_END) {
-          // screw you that person in cumcord who leaves off the last semicolon
-          throw ParserError("last prop in block did not have a semicolon");
+          // unterminated last semicolon EWWWWWW
+          state.mode = Mode.toplevel;
+          _resetStack();
         } else if (state.workingStack.endsWith(COMMENT_START)) {
-          popLastWorkingStack(state, 3);
+          popLastWorkingStack(state, COMMENT_START.length);
           state.mode = Mode.blockcomment;
           state.blockCommentReturnStack = state.workingStack;
           _resetStack();
+        } else if (currentChar == "'") {
+          state.mode = Mode.string;
+          state.stringIsDouble = false;
+        } else if (currentChar == '"') {
+          state.mode = Mode.string;
+          state.stringIsDouble = true;
         }
         break;
 
+      // after a ;, but before a comment.
+      // If a comment is not encountered return to block
       case Mode.afterprop:
+        // TODO: implement this
         break;
 
+      // a block, but one that we dont actually care about
       case Mode.unimportantblock:
         if (state.workingStack.endsWith(COMMENT_START)) {
           state.mode = Mode.blockcomment;
@@ -121,6 +142,7 @@ class MutableParser {
         }
         break;
 
+      // a block comment, this is where we need to finish prop parses :eyes:
       case Mode.blockcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
           if (state.lastMode == Mode.afterprop) {
@@ -133,14 +155,18 @@ class MutableParser {
         }
         break;
 
+      // Strings are unique in that they parse into the stack as it was
+      // before switching to that mode. They do not clear the stack after.
+      // this mode is just here to force parsing forward until string end
       case Mode.string:
         final lastTwo = last(state.workingStack, 2);
         if (((lastTwo[1] == '"' && !state.stringIsDouble) ||
                 (lastTwo[1] == "'" && state.stringIsDouble)) &&
-            lastTwo[0] == '\\') {
+            lastTwo[0] != '\\') {
           state.mode = state.lastMode;
-          state.lastString = state.workingStack;
-          _resetStack();
+        } else if (lastTwo[1] == "\n" && lastTwo[0] != "\\") {
+          throw ParserError("CSS multi line strings must \\ escape the newline",
+              state.pos, state.input);
         }
         break;
     }

@@ -11,6 +11,12 @@ const css = """
 #block {
   margin: 1rem;
 }
+
+/* for fun, here's a parser error */
+.block::before {
+  content: "i didnt escape
+the newline";
+}
 """;
 
 void main() {

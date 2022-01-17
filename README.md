@@ -29,3 +29,4 @@ so here's what I'm going with.
 | Block | the part enclosed in `{}` after a selector |
 | Property | an individual style insidea block - for example setting a colour or margin |
 | Rule | this term is banned for being too ambiguous :p |
+| Stack | a working list of characters. Technically not a stack but treated mostly like one. |

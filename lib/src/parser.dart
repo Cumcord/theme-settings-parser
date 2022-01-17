@@ -21,7 +21,7 @@ class Parser {
   ParserState get state => _mutParser.state;
 
   /// parses to end, and returns the parsed blocks
-  Map<String, Block> parseToEnd() {
+  List<Block> parseToEnd() {
     while (_mutParser.advance()) {}
     return _mutParser.state.blocks;
   }
