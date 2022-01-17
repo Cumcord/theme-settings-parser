@@ -1,39 +1,31 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# cumcord theme settings parser
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+Parses cumcord theme settings.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+```css
+/* THE FOLLOWING EXAMPLE SUBJECT TO CHANGE UNTIL STANDARDISED */
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+/* TODO: once we solidify how were doing imports, put here */
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
+/* cc:settings */
+:root {
+  --main-color: red; /* cc:dropdown: #123123, #123765, #123865 */
+  --another-var: blue; /* cc:colorpicker */
+}
+/* cc:settings */
+.theme-dark {
+    --watermark-override: "Cumcord is cool, enjoy my theme"; /* cc:text */
+}
 ```
 
-## Additional information
+## common terminology in code
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Idk what the parts of a CSS file should technically be called,
+so here's what I'm going with.
+
+| term | meaning |
+|-|-|
+| Selector | selects elements to apply the following block to |
+| Block | the part enclosed in `{}` after a selector |
+| Property | an individual style insidea block - for example setting a colour or margin |
+| Rule | this term is banned for being too ambiguous :p |
