@@ -14,7 +14,8 @@ class Parser {
   Parser._typeCheckerLimitationBypass(this._mutParser);
 
   Parser(String input)
-      : this._typeCheckerLimitationBypass(MutableParser(ParserState(input)));
+      : this._typeCheckerLimitationBypass(
+            MutableParser(ParserState(input.replaceAll("\r\n", "\n"))));
 
   MutableParser _mutParser;
 

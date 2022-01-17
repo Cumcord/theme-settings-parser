@@ -65,6 +65,7 @@ class MutableParser {
       // a top level comment, be it /* cc: or not
       case Mode.topcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
+          popLastWorkingStack(state, 2);
           trimStack(state);
 
           if (state.workingStack.startsWith(COMMENT_PREFIX) &&
@@ -117,10 +118,26 @@ class MutableParser {
         }
         break;
 
-      // after a ;, but before a comment.
-      // If a comment is not encountered return to block
+      /* 
+       * after a ;, but before a comment.
+       * If a comment is not encountered return to block
+       * this is mostly here so blockcomment knows its important
+       * by reading lastmode and seeing we came from a prop.
+       * Probably the only part of this entire parser that cares about chars:
+       * only parses thru " " or "/" to get allow parsing thru to comments
+       * else immediately backtracks one char and falls back to block
+       */
       case Mode.afterprop:
-        // TODO: implement this
+        if (state.workingStack.endsWith(COMMENT_START)) {
+          state.mode = Mode.blockcomment;
+          _resetStack();
+        } else if (currentChar != " " && currentChar != "/") {
+          state.mode = Mode.block;
+          // oh crap this is a backtracking parser now????
+          // (technically doesnt backtrack so much as just *not advancing*)
+          state.pos--;
+          _resetStack();
+        }
         break;
 
       // a block, but one that we dont actually care about
