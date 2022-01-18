@@ -1,3 +1,5 @@
+import 'package:cc_theme_settings_parser/src/parserstate.dart';
+
 class _Pos {
   final int line;
   final int col;
@@ -27,16 +29,14 @@ _Pos _calculatePos(final List<int> lineCounts, final int rawPos) {
 
 class ParserError extends Error {
   final String msg;
-  final int rawPos;
+  final ParserState state;
 
-  final _Pos pos;
+  int get rawPos => state.pos;
+
+  _Pos get pos => _calculatePos(_calculateLineCounts(state.input), rawPos);
 
   int get lineNum => pos.line;
   int get colNum => pos.col;
 
-  ParserError(String msg, int rawPos, String content)
-      : this._rawConst(
-            msg, rawPos, _calculatePos(_calculateLineCounts(content), rawPos));
-
-  ParserError._rawConst(this.msg, this.rawPos, this.pos);
+  ParserError(this.msg, this.state);
 }

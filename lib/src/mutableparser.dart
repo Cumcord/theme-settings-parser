@@ -85,10 +85,11 @@ class MutableParser {
       // a selector, but only after an applicable cc:settings comment
       case Mode.selector:
         if (currentChar == BLOCK_START) {
+          popLastWorkingStack(state);
           trimStack(state);
           state.mode = Mode.block;
           // exciting, time to enter a block that needs proper parsing
-          state.lastSelector = popLast(state.workingStack);
+          state.lastSelector = state.workingStack;
           _resetStack();
         }
         break;
@@ -96,12 +97,12 @@ class MutableParser {
       // parsing a block that's important
       case Mode.block:
         if (currentChar == PROP_END) {
+          popLastWorkingStack(state);
           trimStack(state);
           state.mode = Mode.afterprop;
           state.lastProp = state.workingStack;
           _resetStack();
         } else if (currentChar == BLOCK_END) {
-          // unterminated last semicolon EWWWWWW
           state.mode = Mode.toplevel;
           _resetStack();
         } else if (state.workingStack.endsWith(COMMENT_START)) {
@@ -148,11 +149,9 @@ class MutableParser {
         } else if (currentChar == "'") {
           state.mode = Mode.string;
           state.stringIsDouble = false;
-          _resetStack();
         } else if (currentChar == '"') {
           state.mode = Mode.string;
           state.stringIsDouble = true;
-          _resetStack();
         } else if (state.workingStack.endsWith(BLOCK_END)) {
           state.mode = Mode.toplevel;
           _resetStack();
@@ -177,13 +176,14 @@ class MutableParser {
       // this mode is just here to force parsing forward until string end
       case Mode.string:
         final lastTwo = last(state.workingStack, 2);
+
         if (((lastTwo[1] == '"' && !state.stringIsDouble) ||
                 (lastTwo[1] == "'" && state.stringIsDouble)) &&
             lastTwo[0] != '\\') {
           state.mode = state.lastMode;
         } else if (lastTwo[1] == "\n" && lastTwo[0] != "\\") {
-          throw ParserError("CSS multi line strings must \\ escape the newline",
-              state.pos, state.input);
+          throw ParserError(
+              "CSS multi line strings must \\ escape the newline", state);
         }
         break;
     }
