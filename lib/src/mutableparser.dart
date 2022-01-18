@@ -21,6 +21,8 @@ css code, with associated mode annotated with <>
 
 */
 
+import 'dart:developer';
+
 import 'package:cc_theme_settings_parser/src/constants.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
 import 'package:cc_theme_settings_parser/src/parsererror.dart';
@@ -163,6 +165,7 @@ class MutableParser {
         if (state.workingStack.endsWith(COMMENT_END)) {
           if (state.lastMode == Mode.afterprop) {
             // TODO: handle creating settings! Exciting!!!!
+            debugger();
           } else {
             state.mode = state.lastMode;
             state.workingStack = state.blockCommentReturnStack;
@@ -188,7 +191,11 @@ class MutableParser {
         break;
     }
 
-    state.lastMode = thisModeTmp;
+    state.rawLastMode = thisModeTmp;
+    if (thisModeTmp != state.mode) {
+      // if mode changes
+      state.lastMode = state.rawLastMode;
+    }
 
     return true;
   }

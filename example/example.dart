@@ -9,7 +9,7 @@ const css = """
 /* cc:settings */
 .settings
 #block {
-  margin: 1rem;
+  margin: 1rem; /* cc:slider */
 }
 
 /* for fun, here's a parser error */

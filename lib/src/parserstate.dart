@@ -32,6 +32,9 @@ class ParserState {
   /// Used by modes like Mode.string and Mode.blockcomment to return back
   Mode lastMode = Mode.toplevel;
 
+  /// Used to help only set lastMode when necessary
+  Mode rawLastMode = Mode.toplevel;
+
   /// After a comment, it may be necessary to keep the old value of workingStack
   String blockCommentReturnStack = "";
 
