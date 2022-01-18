@@ -10,3 +10,4 @@ const BLOCK_START = "{";
 const BLOCK_END = "}";
 
 const PROP_END = ";";
+const AFTERPROP_PARSE_CHARS = [" ", "/"];

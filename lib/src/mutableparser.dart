@@ -131,7 +131,7 @@ class MutableParser {
         if (state.workingStack.endsWith(COMMENT_START)) {
           state.mode = Mode.blockcomment;
           _resetStack();
-        } else if (currentChar != " " && currentChar != "/") {
+        } else if (!AFTERPROP_PARSE_CHARS.contains(currentChar)) {
           state.mode = Mode.block;
           // oh crap this is a backtracking parser now????
           // (technically doesnt backtrack so much as just *not advancing*)
