@@ -1,3 +1,4 @@
+import 'package:cc_theme_settings_parser/index.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
 
 /// returns the last [count] characters of [str]
@@ -22,4 +23,19 @@ void popLastWorkingStack(ParserState state, [int count = 1]) {
 /// trims whitespace off the start and end of the stack
 void trimStack(ParserState state) {
   state.workingStack = state.workingStack.trim();
+}
+
+/// the selector be minified doe
+String minifySelector(String selector) {
+  while (selector.contains("\n")) {
+    selector = selector.replaceAll("\n", " ");
+  }
+
+  while (selector.contains("  ")) {
+    selector = selector.replaceAll("  ", " ");
+  }
+
+  selector = selector.replaceAll(" > ", ">");
+
+  return selector;
 }

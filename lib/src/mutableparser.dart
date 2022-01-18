@@ -53,7 +53,7 @@ class MutableParser {
     final thisModeTmp = state.mode;
 
     switch (state.mode) {
-      // we're before a /* cc: comment (at the very start or after a })
+      // we're before a cc: comment (at the very start or after a })
       case Mode.toplevel:
         if (state.workingStack.endsWith(COMMENT_START)) {
           state.mode = Mode.topcomment;
@@ -64,7 +64,7 @@ class MutableParser {
         }
         break;
 
-      // a top level comment, be it /* cc: or not
+      // a top level comment, be it cc: or not
       case Mode.topcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
           popLastWorkingStack(state, 2);
@@ -136,8 +136,6 @@ class MutableParser {
           _resetStack();
         } else if (!AFTERPROP_PARSE_CHARS.contains(currentChar)) {
           state.mode = Mode.block;
-          // oh crap this is a backtracking parser now????
-          // (technically doesnt backtrack so much as just *not advancing*)
           state.pos--;
           _resetStack();
         }
@@ -165,7 +163,7 @@ class MutableParser {
         if (state.workingStack.endsWith(COMMENT_END)) {
           if (state.lastMode == Mode.afterprop) {
             // TODO: handle creating settings! Exciting!!!!
-            debugger();
+            print("test");
           } else {
             state.mode = state.lastMode;
             state.workingStack = state.blockCommentReturnStack;
@@ -191,10 +189,9 @@ class MutableParser {
         break;
     }
 
-    state.rawLastMode = thisModeTmp;
-    if (thisModeTmp != state.mode) {
-      // if mode changes
-      state.lastMode = state.rawLastMode;
+    // on mode change, update last
+    if (state.mode != thisModeTmp) {
+      state.lastMode = thisModeTmp;
     }
 
     return true;
