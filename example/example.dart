@@ -10,6 +10,7 @@ const css = """
 .settings
 #block {
   margin: 1rem; /* cc:slider */
+  content: "aaa"; /* cc:text */
 }
 
 /* for fun, here's a parser error */

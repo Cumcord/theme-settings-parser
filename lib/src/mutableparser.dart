@@ -23,6 +23,7 @@ css code, with associated mode annotated with <>
 
 import 'dart:developer';
 
+import 'package:cc_theme_settings_parser/src/block.dart';
 import 'package:cc_theme_settings_parser/src/constants.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
 import 'package:cc_theme_settings_parser/src/parsererror.dart';
@@ -91,7 +92,7 @@ class MutableParser {
           trimStack(state);
           state.mode = Mode.block;
           // exciting, time to enter a block that needs proper parsing
-          state.lastSelector = state.workingStack;
+          state.lastSelector = minifySelector(state.workingStack);
           _resetStack();
         }
         break;
@@ -162,8 +163,13 @@ class MutableParser {
       case Mode.blockcomment:
         if (state.workingStack.endsWith(COMMENT_END)) {
           if (state.lastMode == Mode.afterprop) {
-            // TODO: handle creating settings! Exciting!!!!
-            print("test");
+            popLastWorkingStack(state, 2);
+            trimStack(state);
+            if (state.workingStack.startsWith(COMMENT_PREFIX)) {
+              final type = state.workingStack.substring(COMMENT_PREFIX.length);
+              _addProp(type);
+              _resetStack();
+            }
           } else {
             state.mode = state.lastMode;
             state.workingStack = state.blockCommentReturnStack;
@@ -195,5 +201,15 @@ class MutableParser {
     }
 
     return true;
+  }
+
+  void _addProp(String type) {
+    if (!state.lastProp.contains(":")) {
+      throw ParserError("prop did not contain a `:` character", state);
+    }
+    final propAndValue = state.lastProp.split(":");
+    final propName = propAndValue[0].trim();
+    final defaultVal = propAndValue[1].trim();
+    throw "TODO: not finished implementing";
   }
 }

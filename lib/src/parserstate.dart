@@ -1,5 +1,5 @@
-import 'package:cc_theme_settings_parser/src/block.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
+import 'package:cc_theme_settings_parser/src/setting.dart';
 
 /// an object containing everything needed to describe the state of a parser
 class ParserState {
@@ -36,5 +36,5 @@ class ParserState {
   String blockCommentReturnStack = "";
 
   /// parsed blocks go here, read your output out of this prop!!!
-  List<Block> blocks = [];
+  Map<String, List<Setting>> blocks = {};
 }
