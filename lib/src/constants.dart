@@ -11,3 +11,6 @@ const BLOCK_END = "}";
 
 const PROP_END = ";";
 const AFTERPROP_PARSE_CHARS = [" ", "/"];
+
+const SETTING_TYPE_PROPS_SEP = ":";
+const SETTING_PROPS_SEP = ",";

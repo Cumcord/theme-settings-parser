@@ -21,13 +21,13 @@ css code, with associated mode annotated with <>
 
 */
 
-import 'dart:developer';
+import 'dart:ffi';
 
-import 'package:cc_theme_settings_parser/src/block.dart';
 import 'package:cc_theme_settings_parser/src/constants.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
 import 'package:cc_theme_settings_parser/src/parsererror.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
+import 'package:cc_theme_settings_parser/src/setting.dart';
 import 'package:cc_theme_settings_parser/src/util.dart';
 
 /// ONLY USE FOR DEBUGGING, USE `Parser` INSTEAD
@@ -166,8 +166,30 @@ class MutableParser {
             popLastWorkingStack(state, 2);
             trimStack(state);
             if (state.workingStack.startsWith(COMMENT_PREFIX)) {
-              final type = state.workingStack.substring(COMMENT_PREFIX.length);
-              _addProp(type);
+              // we've found a setting! push to final data structure
+              final rawTypeAndProps =
+                  state.workingStack.substring(COMMENT_PREFIX.length);
+
+              if (rawTypeAndProps.contains(SETTING_TYPE_PROPS_SEP)) {
+                final typeAndProps =
+                    rawTypeAndProps.split(SETTING_TYPE_PROPS_SEP);
+
+                final type = typeAndProps[0].trim();
+                final props = typeAndProps[1]
+                    .split(SETTING_PROPS_SEP)
+                    .map((i) => i.trim())
+                    .toList();
+
+                if (props.length == 1 || props[0] == "") {
+                  throw ParserError(
+                      "No props provided where `$SETTING_TYPE_PROPS_SEP` is present",
+                      state);
+                }
+
+                _addProp(type, props);
+              } else {
+                _addProp(rawTypeAndProps);
+              }
               _resetStack();
             }
           } else {
@@ -203,13 +225,93 @@ class MutableParser {
     return true;
   }
 
-  void _addProp(String type) {
+  void _addProp(final String type, [final List<String> props = const []]) {
     if (!state.lastProp.contains(":")) {
       throw ParserError("prop did not contain a `:` character", state);
     }
     final propAndValue = state.lastProp.split(":");
     final propName = propAndValue[0].trim();
     final defaultVal = propAndValue[1].trim();
-    throw "TODO: not finished implementing";
+
+    Setting setting;
+    switch (type) {
+      case "text":
+        setting = TextSetting(propName, defaultVal);
+        break;
+
+      // :SanOHYES:
+      //case "colourpicker":
+      case "colorpicker":
+        setting = ColorPickerSetting(propName, defaultVal);
+        break;
+
+      case "dropdown":
+        setting = DropdownSetting(propName, defaultVal, props);
+        break;
+
+      case "num":
+        setting = _parseNum(propName, defaultVal, props, state);
+        break;
+      case "slider":
+        setting = _parseNum(propName, defaultVal, props, state, true);
+        break;
+
+      default:
+        throw ParserError("unknown setting type: $type", state);
+    }
+
+    // final mutated anyway via `add()` dart go brrrrr
+    final working = state.blocks[state.lastSelector] ?? [];
+    working.add(setting);
+    state.blocks[state.lastSelector] = working;
+  }
+}
+
+NumSetting _parseNum(
+    String propName, String defaultVal, List<String> props, ParserState state,
+    [bool slider = false]) {
+  if (props.length != 3) {
+    throw ParserError(
+        "3 props must be present for a num: min, max, step", state);
+  }
+
+  final min = num.tryParse(props[0]);
+  final max = num.tryParse(props[1]);
+  final step = num.tryParse(props[2]);
+  if (min == null || max == null || step == null) {
+    throw ParserError("the props to num must be numbers", state);
+  }
+
+  final parsedVal = _parseCssValue(defaultVal, state);
+
+  if (slider) {
+    return SliderSetting(
+        propName, parsedVal.first, parsedVal.second, max, min, step);
+  }
+
+  return NumSetting(
+      propName, parsedVal.first, parsedVal.second, max, min, step);
+}
+
+Pair<num, String> _parseCssValue(String rawValue, ParserState state) {
+  final tryParsedVal = num.tryParse(rawValue);
+  if (tryParsedVal != null) {
+    return Pair(tryParsedVal, "");
+  } else {
+    const units = ["px", "em", "rem", "vh", "vw", "%", "ms"];
+    for (final unit in units) {
+      if (rawValue.endsWith(unit)) {
+        final refinedValue = popLast(rawValue, unit.length);
+        final parsedValue = num.tryParse(refinedValue);
+        if (parsedValue == null) {
+          throw ParserError(
+              "Value had unit `$unit`, but was not a number", state);
+        }
+        return Pair(parsedValue, unit);
+      }
+    }
+
+    throw ParserError(
+        "CSS value was neither unitless nor had an acceptable unit", state);
   }
 }

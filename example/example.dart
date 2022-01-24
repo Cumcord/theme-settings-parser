@@ -9,13 +9,15 @@ const css = """
 /* cc:settings */
 .settings
 #block {
-  margin: 1rem; /* cc:slider */
+  margin: 1rem; /* cc:slider: 0,100,20; units: rem,px,% */
+  /* fun idea - cc:slider: 0,100,20; units: rem,px,% */
   content: "aaa"; /* cc:text */
+  color: red; /* cc:colorpicker */
+  background-color: green; /* cc:dropdown: #fbc, green, #ffd */
 }
 
-/* for fun, here's a parser error */
 .block::before {
-  content: "i didnt escape
+  content: "i escaped\\
 the newline";
 }
 """;

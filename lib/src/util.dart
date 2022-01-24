@@ -1,5 +1,11 @@
-import 'package:cc_theme_settings_parser/index.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
+
+class Pair<T1, T2> {
+  final T1 first;
+  final T2 second;
+
+  Pair(this.first, this.second);
+}
 
 /// returns the last [count] characters of [str]
 String last(String str, [int count = 1]) {

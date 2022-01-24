@@ -3,40 +3,43 @@ class Setting {
   // we can expose this type but we only want to construct derived classes
   Setting._construct(this.type, this.prop, this.defaultVal);
 
+  /// When used outside of Dart's type system, notably in JS, this is useful.
   final String type;
   String prop;
   String defaultVal;
 }
 
-class Dropdown extends Setting {
+class DropdownSetting extends Setting {
   List<String> options;
 
-  Dropdown(String prop, String defaultVal, this.options)
+  DropdownSetting(String prop, String defaultVal, this.options)
       : super._construct("dropdown", prop, defaultVal);
 }
 
-class ColorPicker extends Setting {
-  ColorPicker(String prop, String defaultVal)
+class ColorPickerSetting extends Setting {
+  ColorPickerSetting(String prop, String defaultVal)
       : super._construct("colorpicker", prop, defaultVal);
 }
 
-class Text extends Setting {
-  Text(String prop, String defaultVal)
+class TextSetting extends Setting {
+  TextSetting(String prop, String defaultVal)
       : super._construct("text", prop, defaultVal);
 }
 
-class NumEntry extends Setting {
-  num? max;
-  num? min;
-  num step = 1;
-  List<String> units;
+class NumSetting extends Setting {
+  num defaultV;
+  num max;
+  num min;
+  num step;
+  String unit;
 
-  NumEntry(String prop, String defaultVal, this.max, this.min, this.units)
-      : super._construct("numentry", prop, defaultVal);
+  NumSetting(
+      String prop, this.defaultV, this.unit, this.max, this.min, this.step)
+      : super._construct("numentry", prop, defaultV.toString() + unit);
 }
 
-class SliderEntry extends NumEntry {
-  SliderEntry(
-      String prop, String defaultVal, num? max, num? min, List<String> units)
-      : super(prop, defaultVal, max, min, units);
+class SliderSetting extends NumSetting {
+  SliderSetting(
+      String prop, num defaultV, String unit, num max, num min, num step)
+      : super(prop, defaultV, unit, max, min, step);
 }

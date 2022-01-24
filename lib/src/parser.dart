@@ -1,6 +1,6 @@
-import 'package:cc_theme_settings_parser/src/block.dart';
 import 'package:cc_theme_settings_parser/src/mutableparser.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
+import 'package:cc_theme_settings_parser/src/setting.dart';
 
 /// Parses thru CSS for settings.
 class Parser {
@@ -22,7 +22,7 @@ class Parser {
   ParserState get state => _mutParser.state;
 
   /// parses to end, and returns the parsed blocks
-  List<Block> parseToEnd() {
+  Map<String, List<Setting>> parseToEnd() {
     while (_mutParser.advance()) {}
     return _mutParser.state.blocks;
   }
