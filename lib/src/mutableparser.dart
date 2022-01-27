@@ -190,8 +190,9 @@ class MutableParser {
               } else {
                 _addProp(rawTypeAndProps);
               }
-              _resetStack();
             }
+            _resetStack();
+            state.mode = Mode.block;
           } else {
             state.mode = state.lastMode;
             state.workingStack = state.blockCommentReturnStack;
@@ -206,8 +207,8 @@ class MutableParser {
       case Mode.string:
         final lastTwo = last(state.workingStack, 2);
 
-        if (((lastTwo[1] == '"' && !state.stringIsDouble) ||
-                (lastTwo[1] == "'" && state.stringIsDouble)) &&
+        if (((lastTwo[1] == '"' && state.stringIsDouble) ||
+                (lastTwo[1] == "'" && !state.stringIsDouble)) &&
             lastTwo[0] != '\\') {
           state.mode = state.lastMode;
         } else if (lastTwo[1] == "\n" && lastTwo[0] != "\\") {
@@ -298,7 +299,7 @@ Pair<num, String> _parseCssValue(String rawValue, ParserState state) {
   if (tryParsedVal != null) {
     return Pair(tryParsedVal, "");
   } else {
-    const units = ["px", "em", "rem", "vh", "vw", "%", "ms"];
+    const units = ["px", "rem", "em", "vh", "vw", "%", "ms"];
     for (final unit in units) {
       if (rawValue.endsWith(unit)) {
         final refinedValue = popLast(rawValue, unit.length);

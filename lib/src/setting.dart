@@ -33,13 +33,16 @@ class NumSetting extends Setting {
   num step;
   String unit;
 
-  NumSetting(
-      String prop, this.defaultV, this.unit, this.max, this.min, this.step)
-      : super._construct("numentry", prop, defaultV.toString() + unit);
+  NumSetting(String prop, num defaultV, String unit, num max, num min, num step)
+      : this._construct("num", prop, defaultV, unit, max, min, step);
+
+  NumSetting._construct(String type, String prop, this.defaultV, this.unit,
+      this.max, this.min, this.step)
+      : super._construct(type, prop, defaultV.toString() + unit);
 }
 
 class SliderSetting extends NumSetting {
   SliderSetting(
       String prop, num defaultV, String unit, num max, num min, num step)
-      : super(prop, defaultV, unit, max, min, step);
+      : super._construct("slider", prop, defaultV, unit, max, min, step);
 }
