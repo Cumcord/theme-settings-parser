@@ -1,6 +1,10 @@
+@JS()
+library cc_theme_settings_parser;
+
 import 'package:cc_theme_settings_parser/src/mutableparser.dart';
 import 'package:cc_theme_settings_parser/src/parserstate.dart';
 import 'package:cc_theme_settings_parser/src/setting.dart';
+import 'package:js/js.dart';
 
 /// Parses thru CSS for settings.
 class Parser {

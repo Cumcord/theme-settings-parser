@@ -21,8 +21,6 @@ css code, with associated mode annotated with <>
 
 */
 
-import 'dart:ffi';
-
 import 'package:cc_theme_settings_parser/src/constants.dart';
 import 'package:cc_theme_settings_parser/src/mode.dart';
 import 'package:cc_theme_settings_parser/src/parsererror.dart';
