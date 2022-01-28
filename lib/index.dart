@@ -29,6 +29,7 @@ String jsParse(String raw) {
   } catch (e) {
     if (e is ParserError) {
       final jsonError = jsonEncode(e, toEncodable: jsonErrorToEncodable)
+          .replaceAll("\\", "\\\\")
           .replaceAll('`', '\\`');
       eval("throw JSON.parse(`$jsonError`)");
     }
