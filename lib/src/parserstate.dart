@@ -20,9 +20,6 @@ class ParserState {
   /// used by Mode.string to know when to end the string and when to require \
   bool stringIsDouble = false;
 
-  /// stores the last stack of Mode.string
-  //String lastString = "";
-
   /// spicy stuff now! last selector read by Mode.aftertopcomment
   String lastSelector = "";
 
@@ -37,4 +34,16 @@ class ParserState {
 
   /// parsed blocks go here, read your output out of this prop!!!
   Map<String, List<Setting>> blocks = {};
+
+  Map<String, dynamic> toJson() => {
+        //'input': input,
+        'pos': pos,
+        'workingStack': workingStack,
+        'mode': mode,
+        'stringIsDouble': stringIsDouble,
+        'lastSelector': lastSelector,
+        'lastProp': lastProp,
+        'lastMode': lastMode,
+        'blockCommentReturnStack': blockCommentReturnStack
+      };
 }

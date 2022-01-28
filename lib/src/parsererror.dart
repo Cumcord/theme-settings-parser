@@ -33,6 +33,11 @@ class ParserError extends Error {
 
   int get lineNum => pos.first;
   int get colNum => pos.second;
-  
+
   ParserError(this.msg, this.state);
+
+  Map<String, dynamic> toJson() => {
+        "msg": msg,
+        "state": state
+      };
 }

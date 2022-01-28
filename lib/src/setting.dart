@@ -7,6 +7,12 @@ class Setting {
   final String type;
   String prop;
   String defaultVal;
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'prop': prop,
+        'defaultVal': defaultVal,
+      };
 }
 
 class DropdownSetting extends Setting {
@@ -32,6 +38,18 @@ class NumSetting extends Setting {
   num min;
   num step;
   String unit;
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'prop': prop,
+        'defaultVal': defaultVal,
+        'defaultV': defaultV,
+        'max': max,
+        'min': min,
+        'step': step,
+        'unit': unit,
+      };
 
   NumSetting(String prop, num defaultV, String unit, num max, num min, num step)
       : this._construct("num", prop, defaultV, unit, max, min, step);

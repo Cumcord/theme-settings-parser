@@ -1,43 +1,44 @@
 @JS()
 library cc_theme_settings_parser;
 
+import 'dart:convert';
+
+import 'package:cc_theme_settings_parser/src/mode.dart';
 import 'package:cc_theme_settings_parser/src/parser.dart';
-import 'package:cc_theme_settings_parser/src/setting.dart';
+import 'package:cc_theme_settings_parser/src/parsererror.dart';
 import 'package:js/js.dart';
 
 export 'src/parser.dart';
 
-@JS("ThemeSettingsParser")
-class JSParser {
-  /* final Parser _parser;
+@JS("parseThemeSettings")
+external set _parseThemeSettings(Function _f);
 
-  JSParser(String raw) : this._construct(Parser(raw));
+@JS()
+external Object? eval(String code);
 
-  JSParser._construct(this._parser) {
-    _parseToEnd = allowInterop(_parser.parseToEnd);
+Object? jsonErrorToEncodable(dynamic obj) {
+  if (obj is Mode) {
+    return obj.toString();
   }
-
-  @JS('parseToEnd')
-  external set _parseToEnd(void Function() f);
-
-  external Map<String, List<Setting>> parseToEnd(); */
-  external void test();
+  return obj.toJson();
 }
 
-/* @JS("ThemeSettingsParser")
-external JSParser parser; */
+String jsParse(String raw) {
+  try {
+    return jsonEncode(Parser(raw).parseToEnd());
+  } catch (e) {
+    if (e is ParserError) {
+      final jsonError = jsonEncode(e, toEncodable: jsonErrorToEncodable)
+          .replaceAll('`', '\\`');
+      eval("throw JSON.parse(`$jsonError`)");
+    }
 
-@JS("eval")
-external Object? JS_EVAL(String code);
+    rethrow;
+  }
+}
 
 void main() {
-  JS_EVAL("""
-    window.ThemeSettingsParser = class JSParser {
-      constructor() {
-      }
-      test() {console.log('hello, world!')}
-    }
-  """);
-  final parser = JSParser();
-  parser.test();
+  _parseThemeSettings = allowInterop(jsParse);
+  eval("""const oldParseThemeSettings = parseThemeSettings;
+      window.parseThemeSettings = (raw) => JSON.parse(oldParseThemeSettings(raw))""");
 }
