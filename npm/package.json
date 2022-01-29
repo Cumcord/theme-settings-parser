@@ -1,6 +1,6 @@
 {
   "name": "cc-theme-settings-parser",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Cumcord theme settings parser",
   "main": "dist/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build:js": "\"$npm_execpath\" run build:dart && node build.mjs",
     "copy": "cp ../README.md ../LICENSE .",
     "clean": "rm -rf dart_build node_modules dist pnpm-lock.yaml LICENSE README.md",
-    "prepublish": "\"$npm_execpath\" i && \"$npm_execpath\" run build:js && \"$npm_execpath\" run copy"
+    "prepublish": "\"$npm_execpath\" run clean && \"$npm_execpath\" i && \"$npm_execpath\" run build:js && \"$npm_execpath\" run copy"
   },
   "repository": {
     "type": "git",
