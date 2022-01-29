@@ -1,0 +1,23 @@
+{
+  "name": "cc-theme-settings-parser",
+  "version": "1.0.0",
+  "description": "Parser cumcord theme settings",
+  "main": "index.js",
+  "scripts": {
+    "build:dart": "dart compile js -o dart_build/dist.js ../lib/index.dart",
+    "build:js": "\"$npm_execpath\" run build:dart && node build.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cumcord/theme-settings-parser.git"
+  },
+  "author": "Yellowsink // Cumcord Team",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/Cumcord/theme-settings-parser/issues"
+  },
+  "homepage": "https://github.com/Cumcord/theme-settings-parser#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.14"
+  }
+}
